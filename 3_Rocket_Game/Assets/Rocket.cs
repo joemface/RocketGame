@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class Rocket : MonoBehaviour
 {
-    [SerializeField] float rcsThrust = 100f;//SerializeField creates an adjustable number in unity
+    [SerializeField] float rcsThrust = 200f;//SerializeField creates an adjustable number in unity
     [SerializeField] float upThrust = 2f;
     Rigidbody rigidBody;
     AudioSource audio;
