@@ -1,20 +1,23 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
+﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 [RequireComponent(typeof(AudioSource))]
 
 public class Rocket : MonoBehaviour
 {
     [SerializeField] float rcsThrust = 200f;//SerializeField creates an adjustable number in unity
     [SerializeField] float upThrust = 2f;
+    [SerializeField] AudioClip mainEngine;
     Rigidbody rigidBody;
     AudioSource audio;
+
+    enum State { Alive, Dying, Transcending }
+
+    State state = State.Alive;
     // Start is called before the first frame update
     void Start()
     {
         audio = GetComponent<AudioSource>();
-        
+
         //reference to rigidbody. Rigidbody here is generics
         rigidBody = GetComponent<Rigidbody>();
     }
@@ -22,63 +25,90 @@ public class Rocket : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Thrust();
-        Rotate();
+        // todo stop sound after death
+        if (state == State.Alive)
+        {
+            RespondToThrustInput();
+            RespondToRotateInput();
+        }
+
     }
 
     void OnCollisionEnter(Collision collision)
     {
-        switch(collision.gameObject.tag)
+        if (state != State.Alive)
+        {
+            return;
+        }
+        switch (collision.gameObject.tag)
         {
             case "Launch":
                 print("Prepare for launch");
                 break;
             case "Danger":
-                print("Huston, we have a problem. . .");
+                // print("Huston, we have a problem. . .");
+                // SceneManager.LoadScene(0);
+                state = State.Dying;
+                Invoke("LoadFirstLevel", 1f); //parameterize the time
                 break;
             case "Finish":
-                //do nothing
-                print("Mission Success!");
+                state = State.Transcending;
+                Invoke("LoadNextLevel", 1f); //parameterize the time
                 break;
-            case "Fuel":
-                print("Used");
+            case "Friendly":
+                print("That tickles");
                 break;
         }
     }
 
-    private void Thrust()
+    private void LoadNextLevel()
     {
-        
+        SceneManager.LoadScene(1);
+
+    }
+    private void LoadFirstLevel()
+    {
+        SceneManager.LoadScene(0);
+    }
+    private void RespondToThrustInput()
+    {
+
         if (Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.W))
         {
-            
-            rigidBody.AddRelativeForce(Vector3.up * upThrust);
-            if (!audio.isPlaying)
-            {
-                GetComponent<AudioSource>().Play();
-                GetComponent<AudioSource>().Play(44100);
-            }
+            ApplyThrust();
+
         }
         else
         {
             audio.Stop();
         }
     }
-    private void Rotate()
+
+    private void ApplyThrust()
+    {
+        rigidBody.AddRelativeForce(Vector3.up * upThrust);
+        if (!audio.isPlaying)
+        {
+            audio.PlayOneShot(mainEngine);
+        }
+    }
+
+    private void RespondToRotateInput()
     {
         rigidBody.freezeRotation = true; //takes manual control of rotation
-        
+
         //f to let the program know ahead of time it's a float 10
         float rotateThisFrame = rcsThrust * Time.deltaTime;
         if (Input.GetKey(KeyCode.A))
         {
-            
+
             transform.Rotate(Vector3.forward * rotateThisFrame);
 
-            
-        }else if (Input.GetKey(KeyCode.D))
+
+        }
+        else if (Input.GetKey(KeyCode.D))
         {
-            
+
             transform.Rotate(Vector3.back * rotateThisFrame);
         }
         else if (Input.GetKey(KeyCode.Q))
@@ -92,5 +122,5 @@ public class Rocket : MonoBehaviour
         rigidBody.freezeRotation = false; //resume physics control of rotation
     }
 
-    
+
 }

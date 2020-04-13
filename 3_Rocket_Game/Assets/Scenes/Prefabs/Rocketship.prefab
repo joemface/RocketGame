@@ -28,7 +28,7 @@ Transform:
   m_GameObject: {fileID: 517430707138174372}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -0.12, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.5307, y: 1.5307, z: 1.5307}
   m_Children:
   - {fileID: 517430707228203438}
   - {fileID: 517430707543603044}
@@ -51,7 +51,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 0c8a9afb903c32344a811e2c6b4ddfaf, type: 3}
+  m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
   m_Volume: 0.39
   m_Pitch: 0.6
@@ -167,6 +167,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rcsThrust: 300
   upThrust: 2
+  mainEngine: {fileID: 8300000, guid: 0c8a9afb903c32344a811e2c6b4ddfaf, type: 3}
 --- !u!1 &517430707228203439
 GameObject:
   m_ObjectHideFlags: 0
@@ -947,7 +948,7 @@ Transform:
   m_GameObject: {fileID: 4818410947483681261}
   m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 4.514, z: -0}
-  m_LocalScale: {x: 0.51443213, y: 0.52387357, z: 0.5279269}
+  m_LocalScale: {x: 0.54030806, y: 0.55693, z: 0.5279269}
   m_Children: []
   m_Father: {fileID: 517430707138174363}
   m_RootOrder: 6
@@ -1010,8 +1011,8 @@ MeshCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 4
-  m_Convex: 0
-  m_CookingOptions: 30
+  m_Convex: 1
+  m_CookingOptions: -1
   m_Mesh: {fileID: 4300000, guid: 5c6e1b3c0e92dfe488971dd5135c37ed, type: 2}
 --- !u!1 &5741891069142051582
 GameObject:
