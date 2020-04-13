@@ -26,6 +26,26 @@ public class Rocket : MonoBehaviour
         Rotate();
     }
 
+    void OnCollisionEnter(Collision collision)
+    {
+        switch(collision.gameObject.tag)
+        {
+            case "Launch":
+                print("Prepare for launch");
+                break;
+            case "Danger":
+                print("Huston, we have a problem. . .");
+                break;
+            case "Finish":
+                //do nothing
+                print("Mission Success!");
+                break;
+            case "Fuel":
+                print("Used");
+                break;
+        }
+    }
+
     private void Thrust()
     {
         
@@ -46,7 +66,7 @@ public class Rocket : MonoBehaviour
     }
     private void Rotate()
     {
-        rigidBody.freezeRotation = true; //takes manual controal of rotation
+        rigidBody.freezeRotation = true; //takes manual control of rotation
         
         //f to let the program know ahead of time it's a float 10
         float rotateThisFrame = rcsThrust * Time.deltaTime;
@@ -55,12 +75,19 @@ public class Rocket : MonoBehaviour
             
             transform.Rotate(Vector3.forward * rotateThisFrame);
 
-            //this rotates the ship towards you..easter egg?
-            //transform.Rotate(Vector3.left);
+            
         }else if (Input.GetKey(KeyCode.D))
         {
             
             transform.Rotate(Vector3.back * rotateThisFrame);
+        }
+        else if (Input.GetKey(KeyCode.Q))
+        {
+            transform.Rotate(Vector3.left);
+        }
+        else if (Input.GetKey(KeyCode.E))
+        {
+            transform.Rotate(Vector3.right);
         }
         rigidBody.freezeRotation = false; //resume physics control of rotation
     }
