@@ -5,7 +5,7 @@ using UnityEngine;
 public class Oscilator : MonoBehaviour
 {
     [SerializeField] Vector3 movementVector = new Vector3(10f, 0f, 0f);
-    [SerializeField] float preriod = 5f;
+    [SerializeField] float period = 5f;
     [Range(0, 1)] [SerializeField] float movementFactor;
     Vector3 startingPos;
     // Start is called before the first frame update
@@ -18,11 +18,11 @@ public class Oscilator : MonoBehaviour
     void Update()
     {
         //set movement factor
-        if (preriod <= Mathf.Epsilon)
+        if (period <= Mathf.Epsilon)
         {
             return;
         }
-        float cycles = Time.time / preriod; //
+        float cycles = Time.time / period; //
         const float tau = Mathf.PI * 2;//full circle
         float rawSinWave = Mathf.Sin(cycles * tau);
 
