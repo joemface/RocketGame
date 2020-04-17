@@ -1495,7 +1495,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1876172602, guid: c5384e52dc994334faf4a2f5961f8c1a, type: 3}
       propertyPath: nextState
-      value: 0
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 1876172602, guid: c5384e52dc994334faf4a2f5961f8c1a, type: 3}
       propertyPath: upThrust

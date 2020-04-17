@@ -11,15 +11,17 @@ public class Rocket : MonoBehaviour
     [SerializeField] AudioClip death;
     [SerializeField] AudioClip alsoDeath;
     [SerializeField] AudioClip win;
-
-
-    [SerializeField] int currentState;
-    [SerializeField] int nextState;
     Rigidbody rigidBody;
     AudioSource audio;
-    enum State { Alive, Dying, Transcending, Developer }
-    State state = State.Alive;
+    bool isTransitioning = false;
+    bool collisionsAreDisabled = false;
     // Start is called before the first frame update
+    /*******************************************
+* START
+*
+*
+*
+************************************************/
     void Start()
     {
         // audio.PlayOneShot(ambiance);
@@ -28,23 +30,56 @@ public class Rocket : MonoBehaviour
         //reference to rigidbody. Rigidbody here is generics
         rigidBody = GetComponent<Rigidbody>();
     }
-
+    /*******************************************
+    * UPDATE
+    *
+    *
+    *
+    ************************************************/
     // Update is called once per frame
     void Update()
     {
         // todo stop sound after death
-        if (state == State.Alive || state == State.Developer)
+        if (!isTransitioning)
         {
 
             RespondToThrustInput();
             RespondToRotateInput();
+            if (Debug.isDebugBuild)
+                RespondToDevMode();
+
         }
 
     }
 
+    /*******************************************
+    * RESPOND TO DEVELOPER MODE
+    *
+    *
+    *
+    ************************************************/
+    private void RespondToDevMode()
+    {
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            // state = State.Transcending;
+            LoadNextLevel();
+        }
+        else if (Input.GetKeyDown(KeyCode.C))
+        {
+            collisionsAreDisabled = !collisionsAreDisabled;//toggle on and off
+        }
+    }
+
+    /*******************************************
+    * COLLISION DETECTOR
+    *
+    *
+    *
+    ************************************************/
     void OnCollisionEnter(Collision collision)
     {
-        if (state != State.Alive)
+        if (isTransitioning || collisionsAreDisabled)
         {
             return;
         }
@@ -59,47 +94,71 @@ public class Rocket : MonoBehaviour
             case "Finish":
                 StartWinSequence();
                 break;
-            case "Friendly":
-                print("That tickles");
-                break;
         }
     }
+
+    /*******************************************
+    * START DEATH SEQUENCE
+    *
+    *
+    *
+    ************************************************/
     private void StartDeathSequence()
     {
-        if (state != State.Developer)
-        {
-            print("Huston, we have a problem. . .");
-            // SceneManager.LoadScene(0);
-            state = State.Dying;
+        isTransitioning = true;
+        print("Huston, we have a problem. . .");
+        // SceneManager.LoadScene(0);
 
-            audio.Stop();
-            audio.pitch = 1.3f;
-            audio.PlayOneShot(alsoDeath);
+        audio.Stop();
+        audio.pitch = 1.3f;
+        audio.PlayOneShot(alsoDeath);
 
-            audio.PlayOneShot(death);
+        audio.PlayOneShot(death);
 
-            Invoke("LoadFirstLevel", levelLoadDelay);
-        }
+        Invoke("ReloadLevel", levelLoadDelay);
 
 
     }
+    /*******************************************
+    * START WIN SEQUENCE
+    *
+    *
+    *
+    ************************************************/
     private void StartWinSequence()
     {
-        state = State.Transcending;
+        isTransitioning = true;
         audio.Stop();
 
         audio.PlayOneShot(win);
         Invoke("LoadNextLevel", levelLoadDelay);
     }
 
+    /*******************************************
+    * LOAD NEXT LEVEL
+    *
+    *
+    *
+    ************************************************/
     private void LoadNextLevel()
     {
-        SceneManager.LoadScene(nextState);
+        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        int nextSceneIndex = currentSceneIndex + 1;
+        if (nextSceneIndex >= SceneManager.sceneCountInBuildSettings)
+            nextSceneIndex = 0;
+        SceneManager.LoadScene(nextSceneIndex);
 
     }
-    private void LoadFirstLevel()
+    /*******************************************
+    * RELOAD LEVEL
+    *
+    *
+    *
+    ************************************************/
+    private void ReloadLevel()
     {
-        SceneManager.LoadScene(currentState);
+        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        SceneManager.LoadScene(currentSceneIndex);
     }
     private void RespondToThrustInput()
     {
@@ -134,27 +193,9 @@ public class Rocket : MonoBehaviour
     {
         audio.PlayOneShot(death);
     }
-    private void RespondToDevMode()
-    {
-        if (Input.GetKey(KeyCode.L))
-        {
-            state = State.Transcending;
-            LoadNextLevel();
-        }
-        else if (Input.GetKey(KeyCode.C))
-        {
-
-            state = State.Developer;
-
-        }
-        else if (Input.GetKey(KeyCode.V))
-        {
-            state = State.Alive;
-        }
-    }
     private void RespondToRotateInput()
     {
-        rigidBody.freezeRotation = true; //takes manual control of rotation
+        rigidBody.angularVelocity = Vector3.zero; //takes manual control of rotation
         //f to let the program know ahead of time it's a float 10
         float rotateThisFrame = rcsThrust * Time.deltaTime;
         if (Input.GetKey(KeyCode.A))
@@ -173,6 +214,11 @@ public class Rocket : MonoBehaviour
         {
             transform.Rotate(Vector3.right);
         }
+        else if (Input.GetKey(KeyCode.R))
+        {
+            ReloadLevel();
+        }
+
 
         rigidBody.freezeRotation = false; //resume physics control of rotation
     }
